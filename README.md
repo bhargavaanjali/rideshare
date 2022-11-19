@@ -2,4 +2,4 @@
 
 # Introduction
 
-This is a dockerized application which can be used to share rides.
+This is a dockerized which can be used to share rides.
