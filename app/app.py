@@ -265,6 +265,8 @@ def nearbyRides():
 		flash('No Rides in your city!','warning')
 		return redirect(url_for('dashboard'))
 
+
+
 @app.route('/rideRequests', methods=['GET','POST'])
 @is_logged_in
 @has_driving
@@ -367,6 +369,47 @@ def shareRide():
 		flash('You Don\'t have Driving License!','warning')
 		return redirect(url_for('dashboard'))
 	return render_template('shareRide.html')
+
+@app.route('/planRides', methods=['GET','POST'])
+@is_logged_in
+def planRide():
+	if request.method == 'POST':
+		# if session['userStatus']=='REGISTERED' or session['userStatus'] == 'AADHAR' or session['userStatus'] == 'NONE':
+		# 	flash('You Don\'t have Driving License!','warning')
+		# 	return redirect(url_for('dashboard'))
+
+		rideDate = request.form['rideDate']
+		rideTime = request.form['rideTime']
+		fromLocation = request.form['fromLocation']
+		toLocation = request.form['toLocation']
+		city = request.form['city']
+		state = request.form['state']
+
+		# Create cursor
+		cur = conn.cursor()
+
+		try:
+			# Add Ride into the Database
+			cur.execute("INSERT INTO Plan(creatorUserId, planDate, planTime, fromLocation, toLocation, city, state) VALUES (%s, %s, %s, %s, %s, %s,%s)", (session['userId'], rideDate, rideTime, fromLocation, toLocation, city, state))
+		except:
+			conn.rollback()
+			flash('Something went wrong','danger')
+			return redirect(url_for('dashboard'))
+
+		# Comit to DB
+		conn.commit()
+
+		# Close connection
+		cur.close()
+
+		flash('Your plan is shared people around you can now send you request to join your travel group','success')
+		return redirect(url_for('dashboard'))
+	
+	if session['userStatus']=='REGISTERED' or session['userStatus'] == 'AADHAR' or session['userStatus'] == 'NONE':
+		flash('You Don\'t have Driving License!','warning')
+		return redirect(url_for('dashboard'))
+	return render_template('planRides.html')
+
 
 
 @app.route('/settings', methods=['GET','POST'])

@@ -40,3 +40,21 @@ CREATE TABLE ShareRequest(
 	RideID INT,
 	requestUserId INT
 );
+
+CREATE TABLE Plan(
+	PlanId BIGSERIAL PRIMARY KEY, 
+	creatorUserId INT,
+	planDate DATE,
+	planTime TIME,
+	planStatus VARCHAR(50) DEFAULT 'PENDING',
+	fromLocation VARCHAR(100),
+	toLocation VARCHAR(100),
+	state VARCHAR(100),
+	city VARCHAR(100)
+);
+
+CREATE TABLE PlanRequest(
+	RequestID BIGSERIAL PRIMARY KEY,
+	PlanID INT,
+	requestUserId INT
+);
