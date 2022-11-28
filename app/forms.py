@@ -6,9 +6,9 @@ class RegisterForm(Form):
 	lname = StringField('Last Name', [validators.Length(min = 1, max = 50)], description='Last Name')
 	gender = SelectField('Gender', choices=[('MALE', 'Male'), ('FEMALE', 'Female')], description='Gender')
 	driving = StringField('Driving License No', description='Driving License No.')
-	aadhar = StringField('PID', description='PID')
+	aadhar = StringField('PID', [validators.Length(min = 9, max = 9)],description='PID')
 	contactNo = StringField('Contact Number', [validators.Length(min = 1, max = 15)], description='Contact No')
-	emailID = StringField('Email', [validators.Length(min = 0, max = 50),validators.Regexp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.edu$',message='please provide VT email')], description='Email')
+	emailID = StringField('Email', [validators.Length(min = 0, max = 50),validators.Regexp('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.+-]+\.edu$',message='Please provide VT email')], description='Email')
 	password = PasswordField('Password',[
 			validators.DataRequired(),
 			validators.EqualTo('confirm', message='Passwords do not match')
