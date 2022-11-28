@@ -485,7 +485,7 @@ def acceptedRides():
 	# Close connection
 	cur.close()
 
-	if rideRequests:
+	if acceptedRides:
 		return render_template('acceptedRides.html', acceptedRides = acceptedRides)
 	else:
 		flash('No Passengers for Your Ride!','warning')
@@ -493,6 +493,56 @@ def acceptedRides():
 
 	return render_template('accepetedRides.html')
 
+
+
+@app.route('/rideConfirmation', methods=['GET','POST'])
+@is_logged_in
+@has_driving
+def rideConfirmation():
+	if request.method == 'POST':
+		if session['userStatus']=='REGISTERED' or session['userStatus'] == 'AADHAR' or session['userStatus'] == 'NONE':
+			flash('You Don\'t have Driving License!','warning')
+			return redirect(url_for('dashboard'))
+		
+		rideId = request.form['rideId']
+		
+		# Create cursor
+		cur = conn.cursor()
+
+		
+		if session['userStatus']=='REGISTERED' or session['userStatus'] == 'AADHAR' or session['userStatus'] == 'NONE':
+				flash('You Don\'t have Driving License!','warning')
+				return redirect(url_for('dashboard'))
+
+	# Create cursor
+	cur = conn.cursor()
+
+	try:
+		# Fetch all the ShareRequests and Details
+		#cur.execute("SELECT * FROM passenger p, ride r, users u WHERE r.RideId = p.rideid AND p.creatoruserid = %s AND p.requestUserId = u.userId",[session['userId']])
+		#cur.execute("SELECT DISTINCT r.ridedate, r.ridetime,r.fromlocation, r.tolocation, r.city, r.state,  u.fname, u.lname, u.gender, u.contactno, p.rideid FROM passenger p, ride r, users u WHERE r.RideId = p.rideid AND p.requestUserId = %s",[session['userId']])
+		cur.execute("SELECT distinct ridetime, fromlocation, tolocation, r.city, r.state, fname, lname, gender, seats, contactno, r.rideid, r.creatoruserid, u.userid, r.carstatus, r.message, ridedate  FROM users u, ride r,passenger p where u.userid=r.creatoruserid and p.requestuserid=%s",[session['userId']])
+
+	except:
+		conn.rollback()
+		flash('Something went wrong','danger')
+		return redirect(url_for('dashboard'))
+
+	acceptedRides = cur.fetchall()
+
+	# Comit to DB
+	conn.commit()
+
+	# Close connection
+	cur.close()
+
+	if acceptedRides:
+		return render_template('rideConfirmation.html', acceptedRides = acceptedRides)
+	else:
+		flash('Sorry! no accepted ride requests','warning')
+		return redirect(url_for('dashboard'))
+
+	return render_template('rideConfirmation.html')
 
 
 
